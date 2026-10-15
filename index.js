@@ -5,21 +5,26 @@ import productRouter from "./routes/products.routes.js";
 import userRouter from "./routes/user.routes.js";
 import cors from "cors"
 import { connectDatabase } from "./config/db_config.js";
-const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Database Connect
 connectDatabase();
 
+// MIDDLEWARE CALLING
+app.use(userRouter);
+app.use(productRouter);
 
+app.use(errorHandler);
 
-//MIDDLEWARE CALLING
-app.use( userRouter );
-app.use( productRouter );
+// Local development ke liye listen, Vercel ke liye export default
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server is running at port ${PORT}`);
+  });
+}
 
-
-app.use(errorHandler)
-
-
-app.listen(   PORT,   ()=>{  console.log(`Server is running at ${process.env.PORT}`)   }    )
+export default app;
