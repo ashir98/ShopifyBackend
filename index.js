@@ -10,8 +10,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database Connect
-connectDatabase();
+// Har request se pehle DB connected hone ka intezar karo
+app.use(async (req, res, next) => {
+  try {
+    await connectDatabase();
+    next();
+  } catch (error) {
+    res.status(500).json({ message: `Database connection failed: ${error.message}` });
+  }
+});
 
 // MIDDLEWARE CALLING
 app.use(userRouter);
